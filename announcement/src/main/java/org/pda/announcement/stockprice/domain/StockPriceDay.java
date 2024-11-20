@@ -42,6 +42,4 @@ public class StockPriceDay {
 
     @Column(name = "change_rate")
     private Float changeRate;
-
-    // Getters and Setters
 }
