@@ -6,6 +6,8 @@ import org.pda.announcement.comment.domain.Comment;
 import org.pda.announcement.favoriteannouncement.domain.FavoriteAnnouncement;
 import org.pda.announcement.favoritestock.domain.FavoriteStock;
 import org.pda.announcement.feedback.domain.Feedback;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Table(name = "User")
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
@@ -34,6 +37,7 @@ public class User {
     @Column(name = "birth_date", length = 7)
     private String birthDate;
 
+    @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
