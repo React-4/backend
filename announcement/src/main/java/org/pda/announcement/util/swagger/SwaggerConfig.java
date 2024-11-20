@@ -29,5 +29,4 @@ public class SwaggerConfig {
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(Collections.singletonList(securityRequirement));
     }
-
 }
