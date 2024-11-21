@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -42,15 +41,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/swagger-resources/**",
             "/swagger-ui/**", "/webjars/**", "/swagger-ui.html",
             "/v3/api-docs/**",
-            "/api/user/signup"
+            "/api/user/signup",
+            "/api/user/login"
     );
-
-    // JWT Secret Key
-    @Value("${jwt.secret}")
-    public static String SECRET;
-    // JWT 만료 시간
-    @Value("${jwt.expiration-time}")
-    public static int EXPIRATION_TIME;
+    private final JwtConfig jwtConfig;
 
     /**
      * JWT 토큰 검증을 위한 필터
@@ -82,7 +76,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
             String token = jwtHeader.replace(TOKEN_PREFIX, "");
-            request.setAttribute("email", JWT.require(Algorithm.HMAC512(SECRET)).build().verify(token).getClaim("email").asString());
+            request.setAttribute("email", JWT.require(Algorithm.HMAC512(jwtConfig.getSecret())).build().verify(token).getClaim("email").asString());
         } catch (TokenExpiredException e) {
             request.setAttribute("exception", EXPIRED_TOKEN);
             throw new JwtFilterException(EXPIRED_TOKEN);
