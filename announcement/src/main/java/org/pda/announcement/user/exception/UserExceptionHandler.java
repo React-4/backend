@@ -1,6 +1,7 @@
 package org.pda.announcement.user.exception;
 
-import org.pda.announcement.exception.UserNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.pda.announcement.user.exception.CustomExceptions.CurrentPasswordMismatchException;
 import org.pda.announcement.user.exception.CustomExceptions.DuplicateFieldException;
 import org.pda.announcement.user.exception.CustomExceptions.MissingFieldException;
@@ -12,14 +13,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+import static org.pda.announcement.user.exception.CustomExceptions.UserNotFoundException;
+
+@Slf4j
+@RestControllerAdvice("org.pda.announcement.user")
 public class UserExceptionHandler {
 
     // 필수 필드 누락 처리
     @ExceptionHandler(MissingFieldException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleMissingField(MissingFieldException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponse("필수 필드 누락"));
+        log.info("필수 필드 누락: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
     }
 
     // 닉네임 또는 이메일 중복 처리
@@ -50,10 +55,16 @@ public class UserExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("현재 비밀번호가 일치하지 않습니다"));
     }
 
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<?> jsonProcessingException(JsonProcessingException e) {
+        log.error("Error occurs {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     // 기타 예외 처리 (예: 유효하지 않은 요청)
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponse("잘못된 요청입니다"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("잘못된 요청입니다2"));
     }
 }
