@@ -20,8 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-import static org.pda.announcement.util.security.jwt.JwtErrorCode.*;
-
 /**
  * JWT 토큰 검증을 위한 필터
  */
@@ -41,8 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/swagger/**",
             "/swagger-resources/**",
             "/swagger-ui/**", "/webjars/**", "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/api/user/signup"
+            "/v3/api-docs/**"
     );
 
     // JWT Secret Key
@@ -72,23 +69,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
             // JWT 헤더가 없을 경우
             if (jwtHeader == null || jwtHeader.isEmpty()) {
-                request.setAttribute("exception", NOTFOUND_TOKEN);
-                throw new JwtFilterException(NOTFOUND_TOKEN);
+                request.setAttribute("exception", JwtErrorCode.NOTFOUND_TOKEN);
+                throw new JwtFilterException(JwtErrorCode.NOTFOUND_TOKEN);
             }
             // JWT 토큰 접두어가 없을 경우
             if (!jwtHeader.startsWith(TOKEN_PREFIX)) {
-                request.setAttribute("exception", UNSUPPORTED_TOKEN);
-                throw new JwtFilterException(UNSUPPORTED_TOKEN);
+                request.setAttribute("exception", JwtErrorCode.UNSUPPORTED_TOKEN);
+                throw new JwtFilterException(JwtErrorCode.UNSUPPORTED_TOKEN);
             }
 
             String token = jwtHeader.replace(TOKEN_PREFIX, "");
             request.setAttribute("email", JWT.require(Algorithm.HMAC512(SECRET)).build().verify(token).getClaim("email").asString());
         } catch (TokenExpiredException e) {
-            request.setAttribute("exception", EXPIRED_TOKEN);
-            throw new JwtFilterException(EXPIRED_TOKEN);
+            request.setAttribute("exception", JwtErrorCode.EXPIRED_TOKEN);
+            throw new JwtFilterException(JwtErrorCode.EXPIRED_TOKEN);
         } catch (JWTVerificationException e) {
-            request.setAttribute("exception", WRONG_TYPE_TOKEN);
-            throw new JwtFilterException(WRONG_TYPE_TOKEN);
+            request.setAttribute("exception", JwtErrorCode.WRONG_TYPE_TOKEN);
+            throw new JwtFilterException(JwtErrorCode.WRONG_TYPE_TOKEN);
         } catch (JwtFilterException e) {
             filterChain.doFilter(request, response);
             return;

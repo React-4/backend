@@ -1,7 +1,6 @@
 package org.pda.announcement.stockprice.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,38 +11,31 @@ import org.pda.announcement.stock.domain.Stock;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "stockpricemonth")
+@Table(name = "StockPriceWeek")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Stockpricemonth {
+public class StockPriceWeek {
     @Id
+    @Column(name = "stock_price_week_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stock_price_month_id", nullable = false)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id", nullable = false)
     private Stock stock;
 
-    @NotNull
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @NotNull
     @Column(name = "open_price", nullable = false)
     private Integer openPrice;
 
-    @NotNull
     @Column(name = "high_price", nullable = false)
     private Integer highPrice;
 
-    @NotNull
     @Column(name = "low_price", nullable = false)
     private Integer lowPrice;
 
-    @NotNull
     @Column(name = "close_price", nullable = false)
     private Integer closePrice;
 
@@ -52,6 +44,4 @@ public class Stockpricemonth {
 
     @Column(name = "change_rate")
     private Float changeRate;
-
 }
-

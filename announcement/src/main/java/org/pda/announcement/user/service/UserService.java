@@ -5,5 +5,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    void signup(UserSignupRequest userSignupRequest);
+    ResponseEntity<?> signup(UserSignupRequest userSignupRequest);
 }
