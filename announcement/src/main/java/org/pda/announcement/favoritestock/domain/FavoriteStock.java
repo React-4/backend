@@ -12,7 +12,7 @@ import org.pda.announcement.user.domain.User;
 @Getter
 @Builder
 @AllArgsConstructor
-@Table(name = "FavoriteStock")
+@Table(name = "favoritestock")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FavoriteStock {
     @Id
