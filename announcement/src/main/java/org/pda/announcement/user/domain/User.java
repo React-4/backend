@@ -80,4 +80,12 @@ public class User {
     public void removeFavoriteStock(FavoriteStock favoriteStock) {
         this.favoriteStocks.remove(favoriteStock);
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePassword(String encode) {
+        this.passwordHash = encode;
+    }
 }
