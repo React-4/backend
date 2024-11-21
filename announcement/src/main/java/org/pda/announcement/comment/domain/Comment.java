@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.pda.announcement.announcement.domain.Announcement;
 import org.pda.announcement.user.domain.User;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -30,10 +32,16 @@ public class Comment {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
 
