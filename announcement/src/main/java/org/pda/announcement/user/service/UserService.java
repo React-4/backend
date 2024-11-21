@@ -6,7 +6,6 @@ import org.pda.announcement.user.dto.UserSignupRequest;
 
 public interface UserService {
 
-
     void signup(UserSignupRequest userSignupRequest);
 
     UserLoinResponse login(UserLoginRequest userLoginRequest);

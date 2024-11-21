@@ -1,6 +1,7 @@
 package org.pda.announcement.stockprice.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -10,9 +11,9 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Table(name = "StockPriceDay")
+@Table(name = "stockpriceday")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockPriceDay {
+public class Stockpriceday {
     @Id
     @Column(name = "stock_price_day_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +34,6 @@ public class StockPriceDay {
 
     @Column(name = "low_price", nullable = false)
     private Integer lowPrice;
-
     @Column(name = "close_price", nullable = false)
     private Integer closePrice;
 

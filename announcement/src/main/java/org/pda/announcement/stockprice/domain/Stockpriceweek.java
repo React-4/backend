@@ -23,7 +23,6 @@ public class Stockpriceweek {
 
     @Column(name = "stock_id", nullable = false)
     private Long stockId;
-
     @NotNull
     @Column(name = "date", nullable = false)
     private LocalDate date;

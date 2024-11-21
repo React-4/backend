@@ -23,7 +23,6 @@ public class UserExceptionHandler {
     @ExceptionHandler(MissingFieldException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorCustomResponse> handleMissingField(MissingFieldException ex) {
-
         log.info("필수 필드 누락: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorCustomResponse(ex.getMessage()));
     }
@@ -54,7 +53,6 @@ public class UserExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ErrorCustomResponse> handleCurrentPasswordMismatch(CurrentPasswordMismatchException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorCustomResponse("현재 비밀번호가 일치하지 않습니다"));
-
     }
 
     @ExceptionHandler(JsonProcessingException.class)
@@ -67,7 +65,6 @@ public class UserExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorCustomResponse> handleGeneralException(Exception ex) {
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorCustomResponse(ex.getMessage()));
     }
 }
