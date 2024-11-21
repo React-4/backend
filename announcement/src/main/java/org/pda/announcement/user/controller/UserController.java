@@ -1,20 +1,16 @@
 package org.pda.announcement.user.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.pda.announcement.user.dto.UserSignupRequest;
 import org.pda.announcement.user.service.UserService;
 import org.pda.announcement.util.api.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -26,7 +22,7 @@ public class UserController {
     /**
      * 회원가입 요청
      * POST	/api/user/signup	Content-Type: application/json
-     * json {"nickname": "string", "password": "string", "email": "string", "birthDate": "YYYY-MM-DD"}
+     * json {"nickname": "string", "password": "string", "email": "string", "birth_date": "YYYY-MM-DD"}
      * - 성공 (201 OK):
      * - 응답 본문: json {"message": "회원가입 성공"}
      * 400 Bad Request: json {"error": "필수 필드 누락"}
@@ -34,11 +30,9 @@ public class UserController {
      * profile_color는 서버에서 10개의 색상 중 랜덤으로 지정되어 응답에 포함됨. 색상 코드 참조
      * - role은 이후에 개발, 기본으로 guest로 저장
      */
-    @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> signup(@Valid @RequestBody UserSignupRequest userSignupRequest) {
-        log.info("회원가입 요청: {}", userSignupRequest);
-        userService.signup(userSignupRequest);
+    public ResponseEntity<ApiResponse> signup(@RequestBody UserSignupRequest userSignupRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse("회원가입 성공"));
+                .body(new ApiResponse("회원가입 성공",
+                        userService.signup(userSignupRequest)));
     }
 }
