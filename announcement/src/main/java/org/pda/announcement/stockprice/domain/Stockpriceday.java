@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Table(name = "StockPriceDay")
+@Table(name = "stock_price_day")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stockpriceday {
     @Id
