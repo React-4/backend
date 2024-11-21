@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
-@Table(name = "Feedback")
+@Table(name = "feedback")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Feedback {
     @Id
