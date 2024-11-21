@@ -48,7 +48,7 @@ public class Stockpriceweek {
     private Integer closePrice;
 
     @Column(name = "volume")
-    private Integer volume;
+    private Long volume;
 
     @Column(name = "change_rate")
     private Float changeRate;
