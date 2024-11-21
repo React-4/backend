@@ -21,12 +21,8 @@ public class Stockpriceweek {
     @Column(name = "stock_price_week_id", nullable = false)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "stock_id", nullable = false)
-    private Stock stock;
-
+    @Column(name = "stock_id", nullable = false)
+    private Long stockId;
     @NotNull
     @Column(name = "date", nullable = false)
     private LocalDate date;
@@ -48,7 +44,7 @@ public class Stockpriceweek {
     private Integer closePrice;
 
     @Column(name = "volume")
-    private Integer volume;
+    private Long volume;
 
     @Column(name = "change_rate")
     private Float changeRate;
