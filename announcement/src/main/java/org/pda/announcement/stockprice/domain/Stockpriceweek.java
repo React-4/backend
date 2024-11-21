@@ -12,7 +12,7 @@ import org.pda.announcement.stock.domain.Stock;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "StockPriceWeek")
+@Table(name = "stock_price_week")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stockpriceweek {
