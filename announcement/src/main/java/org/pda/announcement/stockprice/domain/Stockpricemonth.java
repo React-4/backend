@@ -12,7 +12,7 @@ import org.pda.announcement.stock.domain.Stock;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "stockpricemonth")
+@Table(name = "StockPriceMonth")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stockpricemonth {
@@ -21,11 +21,8 @@ public class Stockpricemonth {
     @Column(name = "stock_price_month_id", nullable = false)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "stock_id", nullable = false)
-    private Stock stock;
+    @Column(name = "stock_id", nullable = false)
+    private Long stockId;
 
     @NotNull
     @Column(name = "date", nullable = false)
