@@ -2,13 +2,11 @@ package org.pda.announcement.util.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-import static org.pda.announcement.util.security.jwt.JwtRequestFilter.HEADER_STRING;
 import static org.pda.announcement.util.security.jwt.JwtRequestFilter.TOKEN_PREFIX;
 
 /**
@@ -21,14 +19,13 @@ public class JwtService {
     private final JwtConfig jwtConfig;
 
     /**
-     * JWT 토큰 복호화
+     * JWT 토큰에서 사용자 이메일 추출
      *
-     * @param request HttpServletRequest
+     * @param token JWT 토큰
      * @return 사용자 이메일
      */
-    public String getUserEmailByJWT(HttpServletRequest request) {
-        String jwtHeader = request.getHeader(HEADER_STRING);
-        String token = jwtHeader.replace(TOKEN_PREFIX, "");
+    public String getUserEmailByJWT(String token) {
+        token = token.replace(TOKEN_PREFIX, "");
         return JWT.require(Algorithm.HMAC512(jwtConfig.getSecret())).build().verify(token).getClaim("email").asString();
     }
 

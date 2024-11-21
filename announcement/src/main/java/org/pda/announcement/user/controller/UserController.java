@@ -11,19 +11,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.pda.announcement.user.dto.UserLoginRequest;
-import org.pda.announcement.user.dto.UserLoinResponse;
-import org.pda.announcement.user.dto.UserSignupRequest;
+import org.pda.announcement.user.dto.*;
 import org.pda.announcement.user.service.UserService;
 import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
 import org.pda.announcement.util.security.jwt.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -67,5 +62,51 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
         return ResponseEntity.ok(new ApiCustomResponse("로그인 성공", userService.login(userLoginRequest)));
+    }
+
+    @PatchMapping
+    @Operation(summary = "닉네임 수정", description = "사용자의 닉네임을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "닉네임 수정 성공",
+                    content = @Content(schema = @Schema(implementation = UpdateNicknameResponse.class))),
+            @ApiResponse(responseCode = "400", description = "필수 필드 누락",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 user_id",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<ApiCustomResponse> updateNickname(@Valid @RequestBody UpdateNicknameRequest request, @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(new ApiCustomResponse("닉네임 수정 성공", userService.updateNickname(request, jwtService.getUserEmailByJWT(token))));
+    }
+
+    @PatchMapping("/password")
+    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "필수 필드 누락",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class))),
+            @ApiResponse(responseCode = "401", description = "현재 비밀번호가 일치하지 않습니다",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<ApiCustomResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request, @RequestHeader("Authorization") String token) {
+        userService.updatePassword(request, jwtService.getUserEmailByJWT(token));
+        return ResponseEntity.ok(new ApiCustomResponse("비밀번호 변경 성공"));
+    }
+
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴", description = "사용자의 계정을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "필수 필드 누락",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 email",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class))),
+            @ApiResponse(responseCode = "401", description = "비밀번호가 일치하지 않습니다",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<ApiCustomResponse> deleteUser(@Valid @RequestBody DeleteUserRequest request, @RequestHeader("Authorization") String token) {
+        userService.deleteUser(request, jwtService.getUserEmailByJWT(token));
+        return ResponseEntity.ok(new ApiCustomResponse("회원 탈퇴 성공"));
     }
 }

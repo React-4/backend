@@ -3,9 +3,7 @@ package org.pda.announcement.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pda.announcement.user.domain.User;
-import org.pda.announcement.user.dto.UserLoginRequest;
-import org.pda.announcement.user.dto.UserLoinResponse;
-import org.pda.announcement.user.dto.UserSignupRequest;
+import org.pda.announcement.user.dto.*;
 import org.pda.announcement.user.exception.CustomExceptions.DuplicateFieldException;
 import org.pda.announcement.user.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +14,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import static org.pda.announcement.user.exception.CustomExceptions.InvalidCredentialsException;
+import static org.pda.announcement.user.exception.CustomExceptions.UserNotFoundException;
 
 
 @Slf4j
@@ -63,5 +62,58 @@ public class UserServiceImpl implements UserService {
                 .birthDate(user.getBirthDate())
                 .profileColor(user.getProfileColor())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public UpdateNicknameResponse updateNickname(UpdateNicknameRequest request, String email) {
+        // 이메일로 사용자 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("유효하지 않은 사용자입니다."));
+
+        // 새로운 닉네임이 이미 사용 중인지 확인
+        if (userRepository.findByNickname(request.getNickname()).isPresent()) {
+            throw new DuplicateFieldException("닉네임이 이미 사용 중입니다.");
+        }
+
+        // 닉네임 업데이트
+        user.updateNickname(request.getNickname());
+        userRepository.save(user); // 변경 사항 저장
+
+        // 응답 생성
+        return new UpdateNicknameResponse(user.getNickname());
+    }
+
+    @Override
+    @Transactional
+    public void updatePassword(ChangePasswordRequest request, String email) {
+        // 이메일로 사용자 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("유효하지 않은 사용자입니다."));
+
+        // 현재 비밀번호 확인
+        if (!encodePwd.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새로운 비밀번호로 변경
+        user.updatePassword(encodePwd.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(DeleteUserRequest request, String email) {
+        // 이메일로 사용자 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("유효하지 않은 사용자입니다."));
+
+        // 비밀번호 확인
+        if (!encodePwd.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 사용자 삭제
+        userRepository.delete(user);
     }
 }
