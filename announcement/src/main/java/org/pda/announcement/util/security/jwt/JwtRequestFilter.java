@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -19,6 +18,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+
+import static org.pda.announcement.util.security.jwt.JwtErrorCode.*;
 
 /**
  * JWT 토큰 검증을 위한 필터
@@ -39,15 +40,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/swagger/**",
             "/swagger-resources/**",
             "/swagger-ui/**", "/webjars/**", "/swagger-ui.html",
-            "/v3/api-docs/**"
+            "/v3/api-docs/**",
+            "/api/user/signup",
+            "/api/user/login"
     );
-
-    // JWT Secret Key
-    @Value("${jwt.secret}")
-    public static String SECRET;
-    // JWT 만료 시간
-    @Value("${jwt.expiration-time}")
-    public static int EXPIRATION_TIME;
+    private final JwtConfig jwtConfig;
 
     /**
      * JWT 토큰 검증을 위한 필터
@@ -69,23 +66,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
             // JWT 헤더가 없을 경우
             if (jwtHeader == null || jwtHeader.isEmpty()) {
-                request.setAttribute("exception", JwtErrorCode.NOTFOUND_TOKEN);
-                throw new JwtFilterException(JwtErrorCode.NOTFOUND_TOKEN);
+                request.setAttribute("exception", NOTFOUND_TOKEN);
+                throw new JwtFilterException(NOTFOUND_TOKEN);
             }
             // JWT 토큰 접두어가 없을 경우
             if (!jwtHeader.startsWith(TOKEN_PREFIX)) {
-                request.setAttribute("exception", JwtErrorCode.UNSUPPORTED_TOKEN);
-                throw new JwtFilterException(JwtErrorCode.UNSUPPORTED_TOKEN);
+                request.setAttribute("exception", UNSUPPORTED_TOKEN);
+                throw new JwtFilterException(UNSUPPORTED_TOKEN);
             }
 
             String token = jwtHeader.replace(TOKEN_PREFIX, "");
-            request.setAttribute("email", JWT.require(Algorithm.HMAC512(SECRET)).build().verify(token).getClaim("email").asString());
+            request.setAttribute("email", JWT.require(Algorithm.HMAC512(jwtConfig.getSecret())).build().verify(token).getClaim("email").asString());
         } catch (TokenExpiredException e) {
-            request.setAttribute("exception", JwtErrorCode.EXPIRED_TOKEN);
-            throw new JwtFilterException(JwtErrorCode.EXPIRED_TOKEN);
+            request.setAttribute("exception", EXPIRED_TOKEN);
+            throw new JwtFilterException(EXPIRED_TOKEN);
         } catch (JWTVerificationException e) {
-            request.setAttribute("exception", JwtErrorCode.WRONG_TYPE_TOKEN);
-            throw new JwtFilterException(JwtErrorCode.WRONG_TYPE_TOKEN);
+            request.setAttribute("exception", WRONG_TYPE_TOKEN);
+            throw new JwtFilterException(WRONG_TYPE_TOKEN);
         } catch (JwtFilterException e) {
             filterChain.doFilter(request, response);
             return;

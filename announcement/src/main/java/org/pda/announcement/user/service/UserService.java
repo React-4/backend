@@ -1,9 +1,13 @@
 package org.pda.announcement.user.service;
 
+import org.pda.announcement.user.dto.UserLoginRequest;
+import org.pda.announcement.user.dto.UserLoinResponse;
 import org.pda.announcement.user.dto.UserSignupRequest;
-import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    ResponseEntity<?> signup(UserSignupRequest userSignupRequest);
+
+    void signup(UserSignupRequest userSignupRequest);
+
+    UserLoinResponse login(UserLoginRequest userLoginRequest);
 }
