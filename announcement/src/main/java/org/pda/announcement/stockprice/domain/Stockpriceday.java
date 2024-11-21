@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Table(name = "stockpriceday")
+@Table(name = "StockPriceDay")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stockpriceday {
     @Id
@@ -38,7 +38,7 @@ public class Stockpriceday {
     private Integer closePrice;
 
     @Column(name = "volume")
-    private Integer volume;
+    private Long volume;
 
     @Column(name = "change_rate")
     private Float changeRate;
