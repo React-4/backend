@@ -13,7 +13,6 @@ import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
 import org.pda.announcement.util.security.jwt.JwtService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -78,7 +77,8 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
     })
     public ResponseEntity<ApiCustomResponse> deleteComment(@PathVariable Long comment_id,
-                                                     @RequestHeader("Authorization") String token) {
+                                                           @RequestHeader("Authorization") String token) {
         // 댓글 삭제 로직
+        return null;
     }
 }
