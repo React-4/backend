@@ -53,11 +53,13 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(cf -> cf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // session 을 사용하지 않음
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(FRONT_URL + "/main/**").permitAll()
+                        .requestMatchers(FRONT_URL + "/**").permitAll()
                         .requestMatchers("/api/user/signup").permitAll()
                         .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("**").permitAll()
                         .anyRequest()
                         .authenticated()
                 )
