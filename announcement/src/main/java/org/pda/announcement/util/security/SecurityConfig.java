@@ -3,10 +3,17 @@ package org.pda.announcement.util.security;
 
 import lombok.RequiredArgsConstructor;
 import org.pda.announcement.util.security.jwt.JwtRequestFilter;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,6 +29,7 @@ public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
 
     @Bean
+    @Order(1)
     public BCryptPasswordEncoder encodePwd() {
         return new BCryptPasswordEncoder();
     }
@@ -37,18 +45,28 @@ public class SecurityConfig {
      * @throws Exception 예외
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(FRONT_URL + "/main/**").permitAll()  // 특정 경로는 인증 없이 접근 허용
-//                        .anyRequest().authenticated()  // 나머지 요청은 인증 필요
-//                )
-//                .exceptionHandling(exception ->
-//                        exception.authenticationEntryPoint(new CustomAuthenticationEntryPoint())  // 사용자 정의 인증 실패 처리
-//                )
-//                .addFilter(corsFilter)  // CORS 필터 추가
-//                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);  // JWT 필터 등록
-
-        return http.build();
+    @Order(SecurityProperties.BASIC_AUTH_ORDER)
+    protected SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        // http 시큐리티 빌더
+        return http
+                .httpBasic(HttpBasicConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
+                .sessionManagement(cf -> cf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // session 을 사용하지 않음
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(FRONT_URL + "/main/**").permitAll()
+                        .requestMatchers("/api/user/signup").permitAll()
+                        .requestMatchers("/api/user/login").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .exceptionHandling(authenticationManager -> authenticationManager
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())) // 예외 처리
+                .formLogin(AbstractHttpConfigurer::disable)
+                .addFilter(corsFilter) // @CrossOrigin(인증X), 시큐리티 필터에 등록 인증(O)
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // JWT 필터 등록
+                .build();
     }
+
 }

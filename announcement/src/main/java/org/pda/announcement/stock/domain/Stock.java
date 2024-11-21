@@ -3,9 +3,9 @@ package org.pda.announcement.stock.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.pda.announcement.announcement.domain.Announcement;
-import org.pda.announcement.stockprice.domain.StockPriceDay;
-import org.pda.announcement.stockprice.domain.StockPriceMonth;
-import org.pda.announcement.stockprice.domain.StockPriceWeek;
+import org.pda.announcement.stockprice.domain.Stockpriceday;
+import org.pda.announcement.stockprice.domain.Stockpricemonth;
+import org.pda.announcement.stockprice.domain.Stockpriceweek;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,17 +41,18 @@ public class Stock {
     @Column(name = "company_overview")
     private String companyOverview;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StockPriceDay> stockPriceDays = new ArrayList<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StockPriceDay> stockPriceDays = new ArrayList<>();
+//
+//    @Builder.Default
+//    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StockPriceWeek> stockPriceWeeks = new ArrayList<>();
+//
+//    @Builder.Default
+//    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StockPriceMonth> stockPriceMonths = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StockPriceWeek> stockPriceWeeks = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StockPriceMonth> stockPriceMonths = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
