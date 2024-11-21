@@ -41,17 +41,18 @@ public class Stock {
     @Column(name = "company_overview")
     private String companyOverview;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Stockpriceday> stockPriceDays = new ArrayList<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StockPriceDay> stockPriceDays = new ArrayList<>();
+//
+//    @Builder.Default
+//    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StockPriceWeek> stockPriceWeeks = new ArrayList<>();
+//
+//    @Builder.Default
+//    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StockPriceMonth> stockPriceMonths = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Stockpriceweek> stockPriceWeeks = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Stockpricemonth> stockPriceMonths = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
