@@ -1,5 +1,9 @@
 package org.pda.announcement.stock.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.pda.announcement.stock.dto.StockAutocompleteResponse;
 import org.pda.announcement.stock.dto.StockSearchResponse;
@@ -16,12 +20,18 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stock")
+@Tag(name = "Stock", description = "주식 관련 API")
 public class StockController {
 
     private final StockService stockService;
 
 
     // 티커로 주식 찾기 (GET /api/stock/ticker/{ticker})
+    @Operation(summary = "티커로 주식 조회", description = "주어진 티커로 주식 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "주식 정보 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "주식 정보가 존재하지 않음")
+    })
     @GetMapping("/ticker/{ticker}")
     public ResponseEntity<?> getStockByTicker(@PathVariable String ticker) {
         Optional<StockSearchResponse> stock = stockService.getStockByTicker(ticker);
@@ -35,7 +45,13 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.OK).body(new ApiCustomResponse("주식 정보 조회 성공", stock.get()));
     }
 
-
+    // 주식 검색 (GET /api/stock/search)
+    @Operation(summary = "주식 검색", description = "검색어로 주식을 검색합니다. 티커 또는 회사명으로 자동완성 기능을 제공합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "검색 성공"),
+            @ApiResponse(responseCode = "400", description = "검색어가 비어있음"),
+            @ApiResponse(responseCode = "404", description = "검색 결과가 없음")
+    })
     @GetMapping("/search")
     public ResponseEntity<ApiCustomResponse> searchStocks(@RequestParam String keyword) {
         if (keyword == null || keyword.isEmpty()) {
