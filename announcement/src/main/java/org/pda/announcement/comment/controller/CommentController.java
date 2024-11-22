@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.pda.announcement.comment.dto.AnnouncementCommentResponse;
-import org.pda.announcement.comment.dto.CommentRequest;
-import org.pda.announcement.comment.dto.CommentResponse;
-import org.pda.announcement.comment.dto.MyCommentResponse;
+import org.pda.announcement.comment.dto.*;
 import org.pda.announcement.comment.service.CommentService;
 import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
@@ -27,6 +24,21 @@ public class CommentController {
 
     private final CommentService commentService;
     private final JwtService jwtService;
+
+    @GetMapping("/stock/{stock_id}")
+    @Operation(summary = "특정 종목의 모든 공시 중 최신 댓글 조회", description = "특정 종목의 모든 공시 중 최신 댓글 최대 10개를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "댓글 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = StockCommentResponse.class))),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 stock_id",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<ApiCustomResponse> getLatestCommentsByStock(@PathVariable("stock_id") Long stockId,
+                                                                      @RequestParam(name = "page", defaultValue = "0") int page,
+                                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<StockCommentResponse> comments = commentService.getLatestCommentsByStock(stockId, page, size);
+        return ResponseEntity.ok(new ApiCustomResponse("특정 종목 전체 공시 최신 댓글 목록 조회 성공", comments));
+    }
 
     @GetMapping("/announcement/{announcement_id}")
     @Operation(summary = "특정 공시 댓글 목록 조회", description = "특정 공시에 달린 댓글 목록을 조회합니다.")

@@ -8,6 +8,7 @@ import org.pda.announcement.comment.domain.Comment;
 import org.pda.announcement.comment.dto.AnnouncementCommentResponse;
 import org.pda.announcement.comment.dto.CommentRequest;
 import org.pda.announcement.comment.dto.MyCommentResponse;
+import org.pda.announcement.comment.dto.StockCommentResponse;
 import org.pda.announcement.comment.repository.CommentRepository;
 import org.pda.announcement.exception.GlobalCustomException;
 import org.pda.announcement.exception.GlobalCustomException.AnnouncementNotFoundException;
@@ -143,6 +144,29 @@ public class CommentServiceImpl implements CommentService {
                         comment.getCreatedAt(),
                         comment.getUser().getNickname(),
                         comment.getUser().getProfileColor()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StockCommentResponse> getLatestCommentsByStock(Long stockId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Announcement> announcements = announcementRepository.findByStockId(stockId);
+
+        List<Comment> comments = commentRepository.findByAnnouncementIn(announcements, pageable);
+
+        if (comments.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return comments.stream()
+                .map(comment -> new StockCommentResponse(
+                        comment.getCommentId(),
+                        comment.getContent(),
+                        comment.getCreatedAt(),
+                        comment.getUser().getNickname(),
+                        comment.getUser().getProfileColor(),
+                        comment.getAnnouncement().getAnnouncementId(),
+                        comment.getAnnouncement().getTitle()))
                 .collect(Collectors.toList());
     }
 }

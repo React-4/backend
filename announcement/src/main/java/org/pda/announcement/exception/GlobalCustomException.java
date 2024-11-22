@@ -31,6 +31,16 @@ public class GlobalCustomException {
         }
     }
 
+    public static class StockNotFoundException extends RuntimeException {
+        public StockNotFoundException() {
+            super("유효하지 않은 stock_id입니다.");
+        }
+
+        public StockNotFoundException(String message) {
+            super(message);
+        }
+    }
+
     public static class MissingFieldException extends RuntimeException {
         public MissingFieldException() {
             super("필수 입력 값이 누락되었습니다.");
