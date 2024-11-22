@@ -25,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -62,20 +61,30 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     @Override
     public AllAnnouncementsResponse getAnnouncementsByStockId(Long stockId, String sortBy, Pageable pageable) {
-        Sort sort = getSort(sortBy);
-
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        Page<Announcement> announcements = announcementRepository.findByStockId(stockId, sortedPageable);
+        Page<Announcement> announcements = switch (sortBy) {
+            case "latest" ->
+                    announcementRepository.findByStockId(stockId, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "announcementDate")));
+            case "comment" ->
+                    announcementRepository.findByStockIdOrderByCommentCount(stockId, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            case "vote" ->
+                    announcementRepository.findByStockIdOrderByFeedbackCount(stockId, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            default -> throw new IllegalArgumentException("Invalid sort criteria: " + sortBy);
+        };
 
         return getAllAnnouncementsResponse(announcements);
     }
 
     @Override
     public AllAnnouncementsResponse getAllAnnouncements(String sortBy, Pageable pageable) {
-        Sort sort = getSort(sortBy);
-
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        Page<Announcement> announcements = announcementRepository.findAll(sortedPageable);
+        Page<Announcement> announcements = switch (sortBy) {
+            case "latest" ->
+                    announcementRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "announcementDate")));
+            case "comment" ->
+                    announcementRepository.findAllOrderByCommentCount(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            case "vote" ->
+                    announcementRepository.findAllOrderByFeedbackCount(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            default -> throw new IllegalArgumentException("Invalid sort criteria: " + sortBy);
+        };
 
         return getAllAnnouncementsResponse(announcements);
     }
@@ -111,12 +120,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
                 type.isEmpty() ? null : AnnouncementType.valueOf(type),
                 sortedPageable
         );
-        System.out.println(keyword.isEmpty() ? null : keyword);
-        System.out.println(startDate);
-        System.out.println(endDate);
-        System.out.println(marketType.isEmpty() ? null : marketType);
-        System.out.println(type.isEmpty() ? null : AnnouncementType.valueOf(type));
-        System.out.println(sortedPageable);
 
         return getAllAnnouncementsResponse(announcements);
     }
@@ -142,14 +145,4 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
         return new AllAnnouncementsResponse(announcements.getTotalPages(), announcementList);
     }
-
-    private Sort getSort(String sortBy) {
-        return switch (sortBy) {
-            case "latest" -> Sort.by(Sort.Direction.DESC, "announcementDate");
-            case "most_comments" -> Sort.by(Sort.Direction.DESC, "commentCount");
-            case "most_votes" -> Sort.by(Sort.Direction.DESC, "totalFeedbackCount");
-            default -> throw new IllegalArgumentException();
-        };
-    }
-
 }

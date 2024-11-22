@@ -18,6 +18,19 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
 
     Page<Announcement> findByStockId(Long stockId, Pageable pageable);
 
+    @Query("SELECT a FROM Announcement a LEFT JOIN a.comments c GROUP BY a ORDER BY COUNT(c) DESC")
+    Page<Announcement> findAllOrderByCommentCount(Pageable pageable);
+
+    @Query("SELECT a FROM Announcement a LEFT JOIN a.feedbacks f GROUP BY a ORDER BY COUNT(f) DESC")
+    Page<Announcement> findAllOrderByFeedbackCount(Pageable pageable);
+
+    @Query("SELECT a FROM Announcement a LEFT JOIN a.comments c WHERE a.stock.id = :stockId GROUP BY a ORDER BY COUNT(c) DESC")
+    Page<Announcement> findByStockIdOrderByCommentCount(@Param("stockId") Long stockId, Pageable pageable);
+
+    @Query("SELECT a FROM Announcement a LEFT JOIN a.feedbacks f WHERE a.stock.id = :stockId GROUP BY a ORDER BY COUNT(f) DESC")
+    Page<Announcement> findByStockIdOrderByFeedbackCount(@Param("stockId") Long stockId, Pageable pageable);
+
+
     @Query("SELECT a FROM Announcement a WHERE " +
             "(:keyword IS NULL OR a.stock.companyName LIKE %:keyword%) AND " +
             "(:marketType IS NULL OR a.stock.marketType = :marketType) AND " +
