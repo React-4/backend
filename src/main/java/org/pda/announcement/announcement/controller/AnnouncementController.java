@@ -30,4 +30,29 @@ public class AnnouncementController {
         AllAnnouncementsResponse announcements = announcementService.getAllAnnouncements(sortBy, pageable);
         return ResponseEntity.ok(new ApiCustomResponse("전체 공시 목록 조회 성공", announcements));
     }
+
+    @GetMapping("/stock/{stock_id}")
+    public ResponseEntity<ApiCustomResponse> getAnnouncementsByStockId(
+            @PathVariable("stock_id") Long stockId,
+            @RequestParam(name = "sortBy", defaultValue = "latest") String sortBy,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        AllAnnouncementsResponse announcements = announcementService.getAnnouncementsByStockId(stockId, sortBy, pageable);
+        return ResponseEntity.ok(new ApiCustomResponse("특정 주식 공시 목록 조회 성공", announcements));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiCustomResponse> searchAnnouncements(
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "sortBy", defaultValue = "latest") String sortBy,
+            @RequestParam(name = "period", defaultValue = "") String period,
+            @RequestParam(name = "marketType", defaultValue = "") String marketType,
+            @RequestParam(name = "type", defaultValue = "") String type,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        AllAnnouncementsResponse announcements = announcementService.searchAnnouncements(keyword, sortBy, period, marketType, type, pageable);
+        return ResponseEntity.ok(new ApiCustomResponse("검색어 주식 공시 목록 조회 성공", announcements));
+    }
 }
