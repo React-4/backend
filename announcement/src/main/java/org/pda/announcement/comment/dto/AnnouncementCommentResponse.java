@@ -13,5 +13,4 @@ public class AnnouncementCommentResponse {
     private LocalDateTime createdAt;
     private String username;
     private String userProfileColor;
-
 }

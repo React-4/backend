@@ -16,4 +16,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     Page<Comment> findByAnnouncement(Announcement announcement, Pageable pageable);
 
     List<Comment> findByAnnouncementIn(List<Announcement> announcements, Pageable pageable);
+
+    int countByAnnouncement(Announcement announcement);
 }
