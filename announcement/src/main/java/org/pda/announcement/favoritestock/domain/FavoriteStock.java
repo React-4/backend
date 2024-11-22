@@ -28,7 +28,5 @@ public class FavoriteStock {
     @JoinColumn(name = "stock_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE) // Stock 삭제 시 FavoriteStock도 삭제
     private Stock stock;
-
-
 }
 
