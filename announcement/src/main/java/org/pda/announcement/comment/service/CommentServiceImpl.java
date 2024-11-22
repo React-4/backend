@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.pda.announcement.announcement.domain.Announcement;
 import org.pda.announcement.announcement.repository.AnnouncementRepository;
 import org.pda.announcement.comment.domain.Comment;
+import org.pda.announcement.comment.dto.AnnouncementCommentResponse;
 import org.pda.announcement.comment.dto.CommentRequest;
 import org.pda.announcement.comment.dto.MyCommentResponse;
 import org.pda.announcement.comment.repository.CommentRepository;
@@ -120,6 +121,28 @@ public class CommentServiceImpl implements CommentService {
                 .map(comment -> new MyCommentResponse(comment, comment.getAnnouncement().getStock().getCompanyName(),
                         comment.getAnnouncement().getStock().getId(), comment.getAnnouncement().getTitle(),
                         comment.getAnnouncement().getAnnouncementId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AnnouncementCommentResponse> getCommentsByAnnouncement(Long announcementId, int page, int size) {
+        Announcement announcement = announcementRepository.findById(announcementId)
+                .orElseThrow(GlobalCustomException.AnnouncementNotFoundException::new);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Comment> commentsPage = commentRepository.findByAnnouncement(announcement, pageable);
+
+        if (commentsPage.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return commentsPage.getContent().stream()
+                .map(comment -> new AnnouncementCommentResponse(
+                        comment.getCommentId(),
+                        comment.getContent(),
+                        comment.getCreatedAt(),
+                        comment.getUser().getNickname(),
+                        comment.getUser().getProfileColor()))
                 .collect(Collectors.toList());
     }
 }

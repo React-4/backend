@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.pda.announcement.comment.dto.AnnouncementCommentResponse;
 import org.pda.announcement.comment.dto.CommentRequest;
 import org.pda.announcement.comment.dto.CommentResponse;
 import org.pda.announcement.comment.dto.MyCommentResponse;
@@ -27,7 +28,7 @@ public class CommentController {
     private final CommentService commentService;
     private final JwtService jwtService;
 
-    @GetMapping("/{announcement_id}")
+    @GetMapping("/announcement/{announcement_id}")
     @Operation(summary = "특정 공시 댓글 목록 조회", description = "특정 공시에 달린 댓글 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "댓글 목록 조회 성공",
@@ -35,9 +36,11 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "유효하지 않은 announcement_id",
                     content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
     })
-    public ResponseEntity<ApiCustomResponse> getComments(@PathVariable Long announcement_id, @RequestParam int page) {
-        // 댓글 목록 조회 로직
-        return null;
+    public ResponseEntity<ApiCustomResponse> getCommentsByAnnouncement(@PathVariable("announcement_id") Long announcementId,
+                                                                       @RequestParam(name = "page", defaultValue = "0") int page,
+                                                                       @RequestParam(name = "size", defaultValue = "3") int size) {
+        List<AnnouncementCommentResponse> comments = commentService.getCommentsByAnnouncement(announcementId, page, size);
+        return ResponseEntity.ok(new ApiCustomResponse("특정 공시 댓글 목록 조회 성공", comments));
     }
 
     @GetMapping("/my")
