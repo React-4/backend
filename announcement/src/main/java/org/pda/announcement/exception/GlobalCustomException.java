@@ -81,6 +81,16 @@ public class GlobalCustomException {
         }
     }
 
+    public static class IllegalArgumentException extends RuntimeException {
+        public IllegalArgumentException() {
+            super("유효하지 않은 정렬 기준입니다");
+        }
+
+        public IllegalArgumentException(String message) {
+            super(message);
+        }
+    }
+
     public static class CurrentPasswordMismatchException extends RuntimeException {
         public CurrentPasswordMismatchException() {
             super("현재 비밀번호가 일치하지 않습니다.");
