@@ -1,9 +1,17 @@
 package org.pda.announcement.comment.service;
 
 import org.pda.announcement.comment.dto.CommentRequest;
+import org.pda.announcement.comment.dto.MyCommentResponse;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface CommentService {
     void createComment(Long announcementId, String content, String email);
 
     void updateComment(Long commentId, CommentRequest commentRequest, String email);
+
+    void deleteComment(Long commentId, String email);
+
+    List<MyCommentResponse> getMyComments(String email, int page, int size);
 }
