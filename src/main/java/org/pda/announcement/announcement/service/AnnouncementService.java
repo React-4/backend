@@ -7,5 +7,9 @@ import org.springframework.data.domain.Pageable;
 public interface AnnouncementService {
     AnnouncementResponse getAnnouncementById(Long announcementId);
 
+    AllAnnouncementsResponse getAnnouncementsByStockId(Long stockId, String sortBy, Pageable pageable);
+
     AllAnnouncementsResponse getAllAnnouncements(String sortBy, Pageable pageable);
+
+    AllAnnouncementsResponse searchAnnouncements(String keyword, String sortBy, String period, String marketType, String type, Pageable pageable);
 }
