@@ -43,4 +43,20 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
                                            @Param("type") AnnouncementType type,
                                            Pageable pageable);
 
+    @Query("SELECT a FROM Announcement a WHERE a.stock.id = :stockId GROUP BY a.announcementDate")
+    List<Announcement> findAnnouncementsGroupedByDay(@Param("stockId") Long stockId);
+
+    @Query("SELECT FUNCTION('DATE_FORMAT', a.announcementDate, '%Y-%m') AS month " +
+            "FROM Announcement a " +
+            "GROUP BY month " +
+            "ORDER BY FUNCTION('DATE_FORMAT', a.announcementDate, '%Y-%m') DESC")
+    List<Announcement> findAnnouncementsGroupedByMonth(@Param("stockId") Long stockId);
+
+    @Query("SELECT FUNCTION('YEARWEEK', a.announcementDate, 1) AS week " +
+            "FROM Announcement a " +
+            "WHERE a.stock.id = :stockId " +
+            "GROUP BY week " +
+            "ORDER BY FUNCTION('YEARWEEK', a.announcementDate, 1) DESC")
+    List<Announcement> findAnnouncementsGroupedByWeek(@Param("stockId") Long stockId);
+
 }
