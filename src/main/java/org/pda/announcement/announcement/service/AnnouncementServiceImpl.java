@@ -7,6 +7,7 @@ import org.pda.announcement.announcement.domain.AnnouncementType;
 import org.pda.announcement.announcement.dto.AllAnnouncementResponse;
 import org.pda.announcement.announcement.dto.AllAnnouncementsResponse;
 import org.pda.announcement.announcement.dto.AnnouncementResponse;
+import org.pda.announcement.announcement.dto.ChartAnnouncementResponse;
 import org.pda.announcement.announcement.repository.AnnouncementRepository;
 import org.pda.announcement.comment.repository.CommentRepository;
 import org.pda.announcement.exception.GlobalCustomException.AnnouncementNotFoundException;
@@ -122,6 +123,26 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         );
 
         return getAllAnnouncementsResponse(announcements);
+    }
+
+    @Override
+    public List<ChartAnnouncementResponse> getAnnouncementsGroupedBy(Long stockId, String groupBy) {
+        List<Announcement> announcements;
+        switch (groupBy) {
+            case "day" -> {
+                announcements = announcementRepository.findAnnouncementsGroupedByDay(stockId);
+            }
+            case "week" -> {
+                announcements = announcementRepository.findAnnouncementsGroupedByWeek(stockId);
+            }
+            case "month" -> {
+                announcements = announcementRepository.findAnnouncementsGroupedByMonth(stockId);
+            }
+            default -> throw new IllegalArgumentException("Invalid group by criteria: " + groupBy);
+        }
+        return announcements.stream()
+                .map(a -> new ChartAnnouncementResponse(a.getAnnouncementDate(), a.getAnnouncementId(), a.getTitle()))
+                .collect(Collectors.toList());
     }
 
     private AllAnnouncementsResponse getAllAnnouncementsResponse(Page<Announcement> announcements) {

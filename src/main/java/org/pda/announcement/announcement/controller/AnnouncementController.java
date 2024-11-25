@@ -91,4 +91,20 @@ public class AnnouncementController {
         AllAnnouncementsResponse announcements = announcementService.searchAnnouncements(keyword, sortBy, period, marketType, type, pageable);
         return ResponseEntity.ok(new ApiCustomResponse("검색어 주식 공시 목록 조회 성공", announcements));
     }
+
+    @GetMapping("/stock/{stock_id}/{groupBy}")
+    @Operation(summary = "{stock_id}로 공시 목록 조회 후 groupBy하여 반환", description = "특정 주식 ID로 공시 목록을 조회하고 지정된 기준(day, week, month)으로 그룹화하여 반환합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공시 목록 조회 후 그룹화 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 그룹화 기준",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 stock_id",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<ApiCustomResponse> getAnnouncementsGroupedByDay(
+            @Parameter(description = "주식 ID", required = true) @PathVariable("stock_id") Long stockId,
+            @Parameter(description = "그룹화 기준 (day, week, month)", required = true) @PathVariable("groupBy") String groupBy) {
+        return ResponseEntity.ok(new ApiCustomResponse("공시 목록 조회 후 공시의 date를 day로 GroupBy하여 반환 성공", announcementService.getAnnouncementsGroupedBy(stockId, groupBy)));
+    }
 }
