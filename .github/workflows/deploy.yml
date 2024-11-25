@@ -1,0 +1,35 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon  # Gradle을 사용하여 빌드
+
+      - name: Build Docker image
+        run: docker build . -t hamgeonwook/4zopalza_back:latest
+
+      - name: Log in to Docker Hub
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+        run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push hamgeonwook/4zopalza_back:latest
