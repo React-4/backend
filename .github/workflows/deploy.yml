@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - KAN-38-GitHub-Action-Docker-Deploy
+      - develop
 
 jobs:
   build:
