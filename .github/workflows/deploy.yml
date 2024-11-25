@@ -36,3 +36,13 @@ jobs:
 
       - name: Push Docker image
         run: docker push hamgeonwook/4zopalza_back:latest
+
+  dispatch:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Trigger repository dispatch
+          uses: peter-evans/repository-dispatch@v1
+          with:
+            token: ${{ secrets.GH_PAT }}
+            repository: React-4/dockercompose
+            event-type: trigger-workflow
