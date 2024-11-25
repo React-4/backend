@@ -7,8 +7,11 @@ WORKDIR /usr/src/app
 # 3. 애플리케이션 JAR 파일 복사
 COPY build/libs/*.jar app.jar
 
-# 4. 애플리케이션이 사용할 포트 설정 (예: 8080)
+# 4. application-prod.yml 파일 복사
+COPY src/main/resources/application-prod.yml /usr/src/app/application.yml
+
+# 5. 애플리케이션이 사용할 포트 설정 (예: 8080)
 EXPOSE 8080
 
-# 5. 애플리케이션 시작 명령어
+# 6. 애플리케이션 시작 명령어
 CMD ["java", "-jar", "app.jar"]
