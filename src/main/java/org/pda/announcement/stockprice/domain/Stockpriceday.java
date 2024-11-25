@@ -19,8 +19,8 @@ public class Stockpriceday {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "stock_id", nullable = false)
-    private Stock stock;
+    @Column(name = "stock_id", nullable = false)
+    private Long stockId;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
