@@ -16,7 +16,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import java.time.Duration;
 
 @Configuration
-@Profile({"local", "server"})
+@Profile({"local", "prod"})
 @RequiredArgsConstructor
 public class RedisConfig {
     @Value("${spring.cache.redis.host}")

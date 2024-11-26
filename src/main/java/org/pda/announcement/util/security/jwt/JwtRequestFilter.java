@@ -26,7 +26,7 @@ import static org.pda.announcement.util.security.jwt.JwtErrorCode.*;
  */
 @Slf4j
 @Component
-@Profile({"local", "server"})
+@Profile({"local", "prod"})
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
