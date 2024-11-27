@@ -60,7 +60,7 @@ public class StockPriceController {
     })
     @GetMapping("/rank")
     public ResponseEntity<?> getStockRank(
-            @Parameter(description = "정렬 기준", schema = @Schema(allowableValues = {"amount", "volume", "change_rate_up", "change_rate_down"}, defaultValue = "day"))
+            @Parameter(description = "정렬 기준", schema = @Schema(allowableValues = {"amount", "volume", "change_rate_up", "change_rate_down"}))
             @RequestParam("sort_by") String sort_by) {
         if (sort_by == null || sort_by.isEmpty()) {
             // 오류 응답: sort_by 파라미터가 비어있을 경우
