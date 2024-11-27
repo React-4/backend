@@ -1,6 +1,8 @@
 package org.pda.announcement.stockprice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,9 +34,9 @@ public class StockPriceController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 stock_id")
     })
     @GetMapping("/{stock_id}")
-    public ResponseEntity<?> getStockPrice(@PathVariable Long stock_id,
-                                           @RequestParam String type,
-                                           @RequestParam int length) {
+    public ResponseEntity<?> getStockPrice(@Parameter(description = "주식 id", required = true) @PathVariable("stock_id") Long stock_id,
+                                           @Parameter(description = "정렬 기준", schema = @Schema(allowableValues = {"day", "week", "month"}, defaultValue = "day")) @RequestParam("type") String type,
+                                           @Parameter(description = "길이", schema = @Schema(defaultValue = "10")) @RequestParam("length") int length) {
         // 유효한 type 값 검증
         if (!type.equals("day") && !type.equals("week") && !type.equals("month")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorCustomResponse("유효하지 않은 타입입니다"));
@@ -57,7 +59,9 @@ public class StockPriceController {
             @ApiResponse(responseCode = "404", description = "검색 결과가 없음")
     })
     @GetMapping("/rank")
-    public ResponseEntity<?> getStockRank(@RequestParam String sort_by) {
+    public ResponseEntity<?> getStockRank(
+            @Parameter(description = "정렬 기준", schema = @Schema(allowableValues = {"amount", "volume", "change_rate_up", "change_rate_down"}, defaultValue = "day"))
+            @RequestParam("sort_by") String sort_by) {
         if (sort_by == null || sort_by.isEmpty()) {
             // 오류 응답: sort_by 파라미터가 비어있을 경우
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -83,7 +87,7 @@ public class StockPriceController {
             @ApiResponse(responseCode = "404", description = "주식 정보가 없음")
     })
     @GetMapping("/current/{ticker}")
-    public ResponseEntity<?> getStockCurrentPrice(@PathVariable String ticker) {
+    public ResponseEntity<?> getStockCurrentPrice(@Parameter(description = "현재가 조회") @PathVariable("ticker") String ticker) {
         StockCurrentPriceResponse cp = stockPriceService.getStockCurrentPrice(ticker);
 
         if (cp == null) {
