@@ -43,20 +43,35 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
                                            @Param("type") AnnouncementType type,
                                            Pageable pageable);
 
-    @Query("SELECT a FROM Announcement a WHERE a.stock.id = :stockId GROUP BY a.announcementDate")
-    List<Announcement> findAnnouncementsGroupedByDay(@Param("stockId") Long stockId);
+    @Query(value = "SELECT " +
+            "DATE_FORMAT(a.announcement_date, '%Y-%m-%d') AS day, " + // 연도-월-일 형식으로 변환
+            "a.announcement_id AS announcementId, " + // 공시 ID
+            "a.title AS title " + // 공시 제목
+            "FROM announcement a " +
+            "WHERE a.stock_id = :stockId " + // stockId 필터 추가
+            "ORDER BY a.announcement_date DESC", // 날짜 기준으로 정렬
+            nativeQuery = true)
+    List<Object[]> findAnnouncementsGroupedByDay(@Param("stockId") Long stockId);
 
-    @Query("SELECT FUNCTION('DATE_FORMAT', a.announcementDate, '%Y-%m') AS month " +
-            "FROM Announcement a " +
-            "GROUP BY month " +
-            "ORDER BY FUNCTION('DATE_FORMAT', a.announcementDate, '%Y-%m') DESC")
-    List<Announcement> findAnnouncementsGroupedByMonth(@Param("stockId") Long stockId);
 
-    @Query("SELECT FUNCTION('YEARWEEK', a.announcementDate, 1) AS week " +
-            "FROM Announcement a " +
-            "WHERE a.stock.id = :stockId " +
-            "GROUP BY week " +
-            "ORDER BY FUNCTION('YEARWEEK', a.announcementDate, 1) DESC")
-    List<Announcement> findAnnouncementsGroupedByWeek(@Param("stockId") Long stockId);
+    @Query(value = "SELECT " +
+            "DATE_FORMAT(a.announcement_date, '%Y-%m') AS month, " + // 연도-월 형식으로 변환
+            "a.announcement_id AS announcementId, " + // 공시 ID
+            "a.title AS title " + // 공시 제목
+            "FROM announcement a " +
+            "WHERE a.stock_id = :stockId " + // stockId 필터 추가
+            "ORDER BY month DESC, a.announcement_date DESC", // 월 기준으로 정렬
+            nativeQuery = true)
+    List<Object[]> findAnnouncementsByMonth(@Param("stockId") Long stockId);
 
+
+    @Query(value = "SELECT " +
+            "DATE_SUB(a.announcement_date, INTERVAL (WEEKDAY(a.announcement_date)) DAY) AS week, " +
+            "a.announcement_id AS announcementId, " +
+            "a.title AS title " +
+            "FROM announcement a " +
+            "WHERE a.stock_id = :stockId " +
+            "ORDER BY week DESC, a.announcement_date DESC",
+            nativeQuery = true)
+    List<Object[]> findAnnouncementsByWeek(@Param("stockId") Long stockId);
 }

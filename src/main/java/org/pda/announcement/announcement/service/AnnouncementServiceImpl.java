@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pda.announcement.announcement.domain.Announcement;
 import org.pda.announcement.announcement.domain.AnnouncementType;
-import org.pda.announcement.announcement.dto.AllAnnouncementResponse;
-import org.pda.announcement.announcement.dto.AllAnnouncementsResponse;
-import org.pda.announcement.announcement.dto.AnnouncementResponse;
-import org.pda.announcement.announcement.dto.ChartAnnouncementResponse;
+import org.pda.announcement.announcement.dto.*;
 import org.pda.announcement.announcement.repository.AnnouncementRepository;
 import org.pda.announcement.comment.repository.CommentRepository;
 import org.pda.announcement.exception.GlobalCustomException.AnnouncementNotFoundException;
@@ -23,7 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +35,33 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     private final AnnouncementRepository announcementRepository;
     private final CommentRepository commentRepository;
     private final FeedbackRepository feedbackRepository;
+
+    private static List<ChartAnnouncementDto> getChartAnnouncementDtos(List<Object[]> announcements) {
+        Map<String, List<ChartAnnouncement>> groupedData = new HashMap<>();
+
+        // 공시 데이터를 날짜별로 그룹화합니다.
+        for (Object[] announcement : announcements) {
+            String date = announcement[0].toString(); // 주의 시작 날짜
+            Long announcementId = (Long) announcement[1]; // 공시 ID
+            String title = (String) announcement[2]; // 공시 제목
+
+            // AnnouncementDTO로 변환
+            ChartAnnouncement announcementDTO = new ChartAnnouncement(announcementId, title.trim());
+
+            // 날짜별로 데이터를 그룹화합니다.
+            groupedData.computeIfAbsent(date, k -> new ArrayList<>()).add(announcementDTO);
+
+        }
+
+        // 최종 결과 리스트 생성
+        List<ChartAnnouncementDto> response = new ArrayList<>();
+        for (Map.Entry<String, List<ChartAnnouncement>> entry : groupedData.entrySet()) {
+            ChartAnnouncementDto weekData = new ChartAnnouncementDto(entry.getKey(), entry.getValue());
+            response.add(weekData);
+        }
+
+        return response;
+    }
 
     @Override
     public AnnouncementResponse getAnnouncementById(Long announcementId) {
@@ -126,23 +153,22 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public List<ChartAnnouncementResponse> getAnnouncementsGroupedBy(Long stockId, String groupBy) {
-        List<Announcement> announcements;
+    public List<ChartAnnouncementDto> getAnnouncementsGroupedBy(Long stockId, String groupBy) {
         switch (groupBy) {
             case "day" -> {
-                announcements = announcementRepository.findAnnouncementsGroupedByDay(stockId);
+                List<Object[]> announcementsByDay = announcementRepository.findAnnouncementsGroupedByDay(stockId);
+                return getChartAnnouncementDtos(announcementsByDay);
             }
             case "week" -> {
-                announcements = announcementRepository.findAnnouncementsGroupedByWeek(stockId);
+                List<Object[]> announcementsByWeek = announcementRepository.findAnnouncementsByWeek(stockId);
+                return getChartAnnouncementDtos(announcementsByWeek);
             }
             case "month" -> {
-                announcements = announcementRepository.findAnnouncementsGroupedByMonth(stockId);
+                List<Object[]> announcementsByWeek = announcementRepository.findAnnouncementsByMonth(stockId);
+                return getChartAnnouncementDtos(announcementsByWeek);
             }
             default -> throw new IllegalArgumentException("Invalid group by criteria: " + groupBy);
         }
-        return announcements.stream()
-                .map(a -> new ChartAnnouncementResponse(a.getAnnouncementDate(), a.getAnnouncementId(), a.getTitle()))
-                .collect(Collectors.toList());
     }
 
     private AllAnnouncementsResponse getAllAnnouncementsResponse(Page<Announcement> announcements) {
