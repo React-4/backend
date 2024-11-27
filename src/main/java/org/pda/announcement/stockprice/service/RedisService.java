@@ -23,18 +23,13 @@ public class RedisService {
 
 
     private String getRedisKey(String sortBy) {
-        switch (sortBy) {
-            case "amount":
-                return "거래대금순위";
-            case "volume":
-                return "거래량순위";
-            case "change_rate_up":
-                return "상승률순위";
-            case "change_rate_down":
-                return "하락률순위";
-            default:
-                throw new IllegalArgumentException("Invalid sort_by parameter");
-        }
+        return switch (sortBy) {
+            case "amount" -> "거래대금순위";
+            case "volume" -> "거래량순위";
+            case "change_rate_up" -> "상승률순위";
+            case "change_rate_down" -> "하락률순위";
+            default -> throw new IllegalArgumentException("Invalid sort_by parameter");
+        };
     }
 
     public Map<Object, Object> getStockCurrentPriceByTicker(String ticker) {

@@ -1,6 +1,9 @@
 package org.pda.announcement.stock.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,13 +30,15 @@ public class StockController {
 
 
     // 티커로 주식 찾기 (GET /api/stock/ticker/{ticker})
+    @GetMapping("/ticker/{ticker}")
     @Operation(summary = "티커로 주식 조회", description = "주어진 티커로 주식 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "주식 정보 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "주식 정보가 존재하지 않음")
+            @ApiResponse(responseCode = "200", description = "주식 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "주식 정보가 존재하지 않음",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
     })
-    @GetMapping("/ticker/{ticker}")
-    public ResponseEntity<?> getStockByTicker(@PathVariable String ticker) {
+    public ResponseEntity<?> getStockByTicker(@Parameter(description = "주식 ticker") @PathVariable("ticker") String ticker) {
         Optional<StockSearchResponse> stock = stockService.getStockByTicker(ticker);
 
         if (stock.isEmpty()) {
@@ -48,12 +53,15 @@ public class StockController {
     // 주식 검색 (GET /api/stock/search)
     @Operation(summary = "주식 검색", description = "검색어로 주식을 검색합니다. 티커 또는 회사명으로 자동완성 기능을 제공합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "검색 성공"),
-            @ApiResponse(responseCode = "400", description = "검색어가 비어있음"),
-            @ApiResponse(responseCode = "404", description = "검색 결과가 없음")
+            @ApiResponse(responseCode = "200", description = "검색 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "검색어가 비어있음",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "검색 결과가 없음",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
     })
     @GetMapping("/search")
-    public ResponseEntity<ApiCustomResponse> searchStocks(@RequestParam String keyword) {
+    public ResponseEntity<ApiCustomResponse> searchStocks(@Parameter(description = "검색어") @RequestParam(name = "keyword") String keyword) {
         if (keyword == null || keyword.isEmpty()) {
             // 오류 응답: 검색어가 비어있을 경우
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

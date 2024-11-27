@@ -1,8 +1,13 @@
 package org.pda.announcement.feedback.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.pda.announcement.feedback.domain.FeedbackType;
-import org.pda.announcement.feedback.dto.FeedbackRequest;
 import org.pda.announcement.feedback.service.FeedbackService;
 import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
@@ -19,7 +24,12 @@ public class FeedbackController {
 
     // 특정 공시 투표 조회
     @GetMapping("/{announcement_id}")
-    public ResponseEntity<?> getFeedback(@PathVariable Long announcement_id) {
+    @Operation(summary = "공시 투표 조회", description = "특정 공시에 대한 투표 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공시 투표 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
+    })
+    public ResponseEntity<?> getFeedback(@Parameter(description = "공시 id") @RequestParam(name = "announcement_id") @PathVariable Long announcement_id) {
         try {
             var feedbackData = feedbackService.getFeedback(announcement_id);
             return ResponseEntity.status(HttpStatus.OK).body(feedbackData);
@@ -31,7 +41,12 @@ public class FeedbackController {
 
     // 특정 공시 투표 추가
     @PostMapping("/{announcement_id}")
-    public ResponseEntity<?> addFeedback(@PathVariable Long announcement_id,
+    @Operation(summary = "공시 투표", description = "특정 공시에 대한 투표를 진행합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공시 투표 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
+    })
+    public ResponseEntity<?> addFeedback(@Parameter(description = "공시 id") @RequestParam(name = "announcement_id") @PathVariable Long announcement_id,
                                          @RequestHeader("Authorization") String token,
                                          @RequestBody FeedbackType feedbackRequest) {
         try {
@@ -48,7 +63,12 @@ public class FeedbackController {
 
     // 특정 공시 투표 삭제
     @DeleteMapping("/{announcement_id}")
-    public ResponseEntity<?> deleteFeedback(@PathVariable Long announcement_id, @RequestHeader("Authorization") String token) {
+    @Operation(summary = "공시 투표 삭제", description = "특정 공시에 대한 투표 삭제를 진행합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공시 투표 삭제 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
+    })
+    public ResponseEntity<?> deleteFeedback(@Parameter(description = "공시 id") @RequestParam(name = "announcement_id") @PathVariable Long announcement_id, @RequestHeader("Authorization") String token) {
         try {
             feedbackService.deleteFeedback(announcement_id, token);
             return ResponseEntity.status(HttpStatus.OK).body(new ApiCustomResponse("투표 삭제 성공"));

@@ -105,6 +105,6 @@ public class AnnouncementController {
     public ResponseEntity<ApiCustomResponse> getAnnouncementsGroupedByDay(
             @Parameter(description = "주식 ID", required = true) @PathVariable("stock_id") Long stockId,
             @Parameter(description = "그룹화 기준 (day, week, month)", required = true) @PathVariable("groupBy") String groupBy) {
-        return ResponseEntity.ok(new ApiCustomResponse("공시 목록 조회 후 공시의 date를 day로 GroupBy하여 반환 성공", announcementService.getAnnouncementsGroupedBy(stockId, groupBy)));
+        return ResponseEntity.ok(new ApiCustomResponse("공시 목록 조회 후 공시의 date를 " + groupBy + "로 GroupBy하여 반환 성공", announcementService.getAnnouncementsGroupedBy(stockId, groupBy)));
     }
 }
