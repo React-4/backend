@@ -6,17 +6,20 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pda.announcement.util.security.cookie.CustomHttpServletRequestWrapper;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.http.HttpHeaders;
 import java.util.List;
 
 import static org.pda.announcement.util.security.jwt.JwtErrorCode.*;
@@ -58,7 +61,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            final String jwtHeader = request.getHeader(HEADER_STRING);
+
+
+            // 요청 헤더를 조작하기 위해 CustomHttpServletRequestWrapper 생성
+            CustomHttpServletRequestWrapper wrappedRequest = new CustomHttpServletRequestWrapper(request);
+
+            // 기존 Authorization 헤더 읽기
+            String jwtHeader = request.getHeader(HEADER_STRING);
+            // 쿠키에서 JWT 추출
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if (cookie.getName().equals("token")) {
+                        String jwt = cookie.getValue();
+                        jwtHeader = "Bearer " + jwt;
+                        wrappedRequest.addHeader(HEADER_STRING, jwtHeader);
+                        request = wrappedRequest;
+                        break;
+                    }
+                }
+            }
             // 제외 URL
             if (pathMatchesExcludePattern(request.getRequestURI())) {
                 filterChain.doFilter(request, response);
