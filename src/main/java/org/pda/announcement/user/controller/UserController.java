@@ -61,6 +61,11 @@ public class UserController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
+
+        // samesite 설정 해제 나중에 배포시 제거
+        response.addHeader("Set-Cookie",
+                String.format("token=%s; Path=/; HttpOnly; Secure; SameSite=None", token));
+
         return ResponseEntity.ok(new ApiCustomResponse("로그인 성공", userService.login(userLoginRequest)));
     }
 

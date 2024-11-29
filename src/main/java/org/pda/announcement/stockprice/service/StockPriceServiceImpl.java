@@ -85,8 +85,8 @@ public class StockPriceServiceImpl implements StockPriceService {
                     (String) stockData.get("name"),
                     parseDouble((String) stockData.get("currentPrice")), // Double로 변환
                     parseDouble((String) stockData.get("changeRate")), // Double로 변환
-                    parseDouble((String) stockData.get("accTradeVolume")), // Double로 변환
                     parseDouble((String) stockData.get("changeAmount")), // Double로 변환
+                    parseDouble((String) stockData.get("accTradeVolume")), // Double로 변환
                     parseLong((String) stockData.get("marketCap")), // Long으로 변환
                     parseDouble((String) stockData.get("foreignRatio")) // Double로 변환
             );
