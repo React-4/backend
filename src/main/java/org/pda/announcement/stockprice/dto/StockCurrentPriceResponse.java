@@ -14,6 +14,7 @@ public class StockCurrentPriceResponse {
     private Double currentPrice;
     private Double changeRate;
     private Double changeAmount;
+    private Double accTradeVolume;
     private Long marketCap;
     private Double foreignRatio;
 }
