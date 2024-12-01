@@ -80,4 +80,39 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ApiCustomResponse("검색 성공", stocks));
     }
+
+    // 여러 티커로 주식 정보 조회 (POST /api/stock/tickers)
+    @PostMapping("/tickers")
+    @Operation(summary = "여러 티커로 주식 현재가 조회", description = "여러 티커로 주식 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "주식 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "티커 리스트가 비어있음",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "주식 정보가 존재하지 않음",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
+    })
+    public ResponseEntity<?> getStocksByTickers(
+            @Parameter(description = "주식 티커 리스트", required = true)
+            @RequestBody List<String> tickers) {
+
+        if (tickers == null || tickers.isEmpty()) {
+            // 오류 응답: 티커 리스트가 비어있는 경우
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorCustomResponse("티커 리스트를 입력해주세요"));
+        }
+
+        List<StockSearchResponse> stocks = stockService.getStocksByTickers(tickers);
+
+        if (stocks.isEmpty()) {
+            // 오류 응답: 조회 결과가 없는 경우
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorCustomResponse("해당 티커들에 대한 주식 정보가 존재하지 않습니다"));
+        }
+
+        // 성공적인 응답: 조회된 주식 정보 반환
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ApiCustomResponse("주식 정보 조회 성공", stocks));
+    }
+
 }

@@ -11,5 +11,6 @@ public interface StockRepository extends JpaRepository<Stock, Long>, StockReposi
     // Ticker로 주식 찾기
     Optional<Stock> findByTicker(String ticker);
     List<Stock> findByTickerContainingOrCompanyNameContaining(String ticker, String companyName);
+    List<Stock> findAllByTickerIn(List<String> tickers);
 
 }
