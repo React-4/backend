@@ -12,4 +12,7 @@ public interface StockPriceService {
 
     StockCurrentPriceResponse getStockCurrentPrice(String ticker);
 
+    Map<String, StockCurrentPriceResponse> getStockCurrentPrices(List<String> tickers);
+
+
 }

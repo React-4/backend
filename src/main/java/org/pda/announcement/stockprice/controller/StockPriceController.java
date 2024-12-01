@@ -76,6 +76,8 @@ public class StockPriceController {
                     .body(new ErrorCustomResponse("검색 결과가 없습니다"));
         }
 
+        System.out.println(rankedData);
+
         // 성공적인 응답: Redis에서 가져온 순위 데이터 반환
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ApiCustomResponse("주식 순위 조회 성공", rankedData));

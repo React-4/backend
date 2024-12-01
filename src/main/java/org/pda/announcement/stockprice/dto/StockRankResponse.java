@@ -4,11 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockRankResponse {
+    @JsonProperty("종목id")  // JSON에서 "종목코드"를 자바 필드 "stockCode"로 매핑
+    private Long stockId;
+    @JsonProperty("종목명")  // JSON에서 "종목코드"를 자바 필드 "stockCode"로 매핑
+    private String stockName;
     @JsonProperty("종목코드")  // JSON에서 "종목코드"를 자바 필드 "stockCode"로 매핑
     private String stockCode;
 

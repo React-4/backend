@@ -13,4 +13,7 @@ public interface StockService {
 
     // 티커 및 회사명으로 자동완성 검색
     List<StockAutocompleteResponse> searchStocks(String keyword);
+
+    List<StockSearchResponse> getStocksByTickers(List<String> tickers);
+
 }
