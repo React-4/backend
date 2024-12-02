@@ -8,7 +8,7 @@ import org.pda.announcement.comment.dto.StockCommentResponse;
 import java.util.List;
 
 public interface CommentService {
-    void createComment(Long announcementId, String content, String email);
+    Long createComment(Long announcementId, String content, String email);
 
     void updateComment(Long commentId, CommentRequest commentRequest, String email);
 

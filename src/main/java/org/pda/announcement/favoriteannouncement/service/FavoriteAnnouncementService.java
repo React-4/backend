@@ -12,4 +12,6 @@ public interface FavoriteAnnouncementService {
 
     List<FavoriteAnnouncementResponse> getFavoriteAnnouncementList(String email);
     boolean isFavoriteAnnouncement(Long announcementId, String email);
-    }
+    List<Long> getFavoriteAnnouncementId(String userEmail);
+
+}

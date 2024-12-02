@@ -103,4 +103,10 @@ public class FavoriteStockServiceImpl implements FavoriteStockService {
 
         return favoriteStockRepository.existsByUserAndStock(user, stock);
     }
+
+    public List<Long> getFavoriteStockIds(String userEmail) {
+        // 유저의 관심 종목 ID 리스트 반환
+        return favoriteStockRepository.findStockIdsByUserEmail(userEmail);
+    }
+
 }

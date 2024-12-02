@@ -11,6 +11,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pda.announcement.favoriteannouncement.dto.FavoriteAnnouncementResponse;
+import org.pda.announcement.favoriteannouncement.service.FavoriteAnnouncementService;
+import org.pda.announcement.favoritestock.dto.FavoriteStockResponse;
+import org.pda.announcement.favoritestock.service.FavoriteStockService;
 import org.pda.announcement.user.dto.*;
 import org.pda.announcement.user.service.UserService;
 import org.pda.announcement.util.api.ApiCustomResponse;
@@ -19,6 +23,8 @@ import org.pda.announcement.util.security.jwt.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -29,6 +35,9 @@ public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
+
+    private final FavoriteAnnouncementService favoriteAnnouncementService;
+    private final FavoriteStockService favoriteStockService;
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "사용자 정보를 등록합니다.")
@@ -53,6 +62,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
     })
     public ResponseEntity<ApiCustomResponse> login(@Valid @RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response) {
+        // 로그인 처리
         UserLoinResponse userResponse = userService.login(userLoginRequest);
         String token = jwtService.createJWTToken(userResponse.getEmail());
 
@@ -62,9 +72,19 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
+        // 관심 종목 ID 가져오기
+        List<Long> favoriteStockIds = favoriteStockService.getFavoriteStockIds(userResponse.getEmail());
 
-        return ResponseEntity.ok(new ApiCustomResponse("로그인 성공", userService.login(userLoginRequest)));
+        // 관심 종목과 연관된 공시 ID 가져오기
+        List<Long> favoriteAnnouncementIds = favoriteAnnouncementService.getFavoriteAnnouncementId(userResponse.getEmail());
+
+        // 로그인 응답에 관심 종목 공시 ID 포함
+        userResponse.setFavoriteAnnouncementIds(favoriteAnnouncementIds);
+        userResponse.setFavoriteStockIds(favoriteStockIds);
+
+        return ResponseEntity.ok(new ApiCustomResponse("로그인 성공", userResponse));
     }
+
 
     @PatchMapping
     @Operation(summary = "닉네임 수정", description = "사용자의 닉네임을 수정합니다.")

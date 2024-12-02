@@ -89,4 +89,10 @@ public class FavoriteAnnouncementServiceImpl implements FavoriteAnnouncementServ
 
         return favoriteAnnouncementRepository.existsByUserAndAnnouncement(user, announcement);
     }
+    @Override
+    public List<Long> getFavoriteAnnouncementId(String userEmail) {
+        // 관심 종목 ID 리스트에 해당하는 공시 ID 리스트 반환
+        return favoriteAnnouncementRepository.findAnnouncementIdsByUserEmail(userEmail);
+    }
+
 }

@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void createComment(Long announcementId, String content, String email) {
+    public Long createComment(Long announcementId, String content, String email) {
         // 사용자 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
@@ -55,8 +55,15 @@ public class CommentServiceImpl implements CommentService {
                 .user(user)
                 .build();
 
+
         // 댓글 저장
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        // 저장된 댓글의 ID 반환
+
+        // 댓글 저장
+
+        return savedComment.getCommentId();
     }
 
     @Override

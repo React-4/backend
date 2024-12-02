@@ -86,8 +86,8 @@ public class CommentController {
                                                            @RequestBody CommentRequest request,
                                                            @RequestHeader("Authorization") String token) {
         // 댓글 작성 로직
-        commentService.createComment(announcement_id, request.getContent(), jwtService.getUserEmailByJWT(token));
-        return ResponseEntity.ok(new ApiCustomResponse("댓글 작성 성공"));
+        Long cc = commentService.createComment(announcement_id, request.getContent(), jwtService.getUserEmailByJWT(token));
+        return ResponseEntity.ok(new ApiCustomResponse("댓글 작성 성공",cc));
     }
 
     @PatchMapping("/{comment_id}")
