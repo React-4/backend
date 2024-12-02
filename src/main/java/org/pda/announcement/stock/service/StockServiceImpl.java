@@ -47,7 +47,7 @@ public class StockServiceImpl implements StockService {
                     Map<Object, Object> stockData = stockDataMap.get(stock.getTicker());
                     Double currentPrice = stockData != null ? Double.valueOf((String) stockData.getOrDefault("currentPrice", "0")) : 0.0;
                     Double changeRate = stockData != null ? Double.valueOf((String) stockData.getOrDefault("changeRate", "0")) : 0.0;
-                    Long volume = stockData != null ? Long.valueOf((String) stockData.getOrDefault("volume", "0")) : 0L;
+                    Long volume = stockData != null ? Long.valueOf((String) stockData.getOrDefault("accTradeVolume", "0")) : 0L;
 
                     return StockAutocompleteResponse.fromStock(stock, currentPrice, changeRate, volume);
                 })
