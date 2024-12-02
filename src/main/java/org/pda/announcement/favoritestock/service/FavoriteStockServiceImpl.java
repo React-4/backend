@@ -105,25 +105,8 @@ public class FavoriteStockServiceImpl implements FavoriteStockService {
         return favoriteStockRepository.existsByUserAndStock(user, stock);
     }
 
-<<<<<<< Updated upstream
     public List<Long> getFavoriteStockIds(String userEmail) {
         // 유저의 관심 종목 ID 리스트 반환
         return favoriteStockRepository.findStockIdsByUserEmail(userEmail);
     }
-
-=======
-//    @Override
-//    public List<FavoriteStockPriceResponse> getStocksInfoByIds(List<Long> stockIds) {
-//        return favoriteStockRepository.findStocksInfoByIds(stockIds).stream()
-//                .map(stock -> new FavoriteStockPriceResponse(
-//                        stock.getStockId(),
-//                        stock.getStockName(),
-//                        stock.getTicker(),
-//                        stock.getCurrentPrice(),
-//                        stock.getChangeRate(),
-//                        stock.getTradeVolume()
-//                ))
-//                .collect(Collectors.toList());
-//    }
->>>>>>> Stashed changes
 }
