@@ -8,12 +8,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.pda.announcement.favoritestock.service.FavoriteStockService;
+import org.pda.announcement.stockprice.dto.StockRankResponse;
+import org.pda.announcement.stockprice.service.StockPriceService;
 import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
 import org.pda.announcement.util.security.jwt.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class FavoriteStockController {
     private final FavoriteStockService favoriteStockService;
     private final JwtService jwtService;
 
+    private final StockPriceService stockPriceService;
     // 관심 종목 추가
     @PostMapping("/{stock_id}")
     @Operation(summary = "관심 종목 추가", description = "특정 주식을 관심 종목에 추가합니다.")
@@ -125,4 +131,39 @@ public class FavoriteStockController {
                     .body(new ErrorCustomResponse("인증이 필요합니다"));
         }
     }
+    // 특정 종목 ID 리스트로 가격 정보 조회
+    @PostMapping("/price")
+    @Operation(summary = "특정 종목 가격 정보 조회", description = "주어진 종목 ID 리스트에 대한 현재가, 등락률, 거래량 등의 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "종목 가격 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "종목 정보를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<?> getStockPricesByIds(@RequestBody List<Long> stockIds) {
+        try {
+            if (stockIds == null || stockIds.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorCustomResponse("유효하지 않은 종목 ID 리스트입니다"));
+            }
+
+            // 관심 종목의 가격 정보 조회
+            Map<Integer, StockRankResponse> stockPriceData = stockPriceService.getFavStockPriceFromRedis(stockIds);
+
+            if (stockPriceData == null || stockPriceData.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ErrorCustomResponse("종목 정보를 찾을 수 없습니다"));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiCustomResponse("종목 가격 정보 조회 성공", stockPriceData));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorCustomResponse("서버 오류가 발생했습니다"));
+        }
+    }
+
 }

@@ -16,4 +16,7 @@ public interface StockService {
 
     List<StockSearchResponse> getStocksByTickers(List<String> tickers);
 
+    List<StockSearchResponse> getStocksByIds(List<Long> ids);
+
+
 }

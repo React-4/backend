@@ -1,5 +1,6 @@
 package org.pda.announcement.stock.repository;
 
+import org.pda.announcement.favoritestock.dto.FavoriteStockPriceResponse;
 import org.pda.announcement.stock.domain.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,5 +13,8 @@ public interface StockRepository extends JpaRepository<Stock, Long>, StockReposi
     Optional<Stock> findByTicker(String ticker);
     List<Stock> findByTickerContainingOrCompanyNameContaining(String ticker, String companyName);
     List<Stock> findAllByTickerIn(List<String> tickers);
+
+    List<Stock> findAllByIdIn(List<Long> ids);
+
 
 }

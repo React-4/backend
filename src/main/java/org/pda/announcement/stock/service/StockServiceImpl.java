@@ -62,6 +62,11 @@ public class StockServiceImpl implements StockService {
                 .collect(Collectors.toList());
     }
 
-
-
+    @Override
+    public List<StockSearchResponse> getStocksByIds(List<Long> ids) {
+        List<Stock> stocks = stockRepository.findAllByIdIn(ids); // Repository 메서드 호출
+        return stocks.stream()
+                .map(StockSearchResponse::fromStock) // Stock 엔티티를 DTO로 변환
+                .collect(Collectors.toList());
+    }
 }
