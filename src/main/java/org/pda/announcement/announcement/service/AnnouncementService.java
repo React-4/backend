@@ -1,12 +1,10 @@
 package org.pda.announcement.announcement.service;
 
-import org.pda.announcement.announcement.dto.AllAnnouncementsResponse;
-import org.pda.announcement.announcement.dto.AnnouncementResponse;
-import org.pda.announcement.announcement.dto.ChartAnnouncementDto;
-import org.pda.announcement.announcement.dto.ChartAnnouncementResponse;
+import org.pda.announcement.announcement.dto.*;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AnnouncementService {
     AnnouncementResponse getAnnouncementById(Long announcementId);
@@ -18,4 +16,7 @@ public interface AnnouncementService {
     AllAnnouncementsResponse searchAnnouncements(String keyword, String sortBy, String period, String marketType, String type, Pageable pageable);
 
     List<ChartAnnouncementDto> getAnnouncementsGroupedBy(Long stockId, String groupBy);
+
+
+    List<FavAnnouncementResponse> getAnnouncementsByIds(List<Long> announcementIds);
 }

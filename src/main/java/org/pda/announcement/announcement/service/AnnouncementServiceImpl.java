@@ -192,4 +192,18 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
         return new AllAnnouncementsResponse(announcements.getTotalPages(), announcementList);
     }
+
+
+    @Override
+    public List<FavAnnouncementResponse> getAnnouncementsByIds(List<Long> announcementIds) {
+        List<Announcement> announcements = announcementRepository.findAllById(announcementIds);
+
+        return announcements.stream().map(announcement -> new FavAnnouncementResponse(
+                announcement.getAnnouncementId(),
+                announcement.getTitle(),
+                announcement.getStock().getCompanyName(),
+                announcement.getAnnouncementDate()
+        )).collect(Collectors.toList());
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.pda.announcement.favoritestock.repository;
 
 import org.pda.announcement.favoritestock.domain.FavoriteStock;
+import org.pda.announcement.favoritestock.dto.FavoriteStockPriceResponse;
 import org.pda.announcement.stock.domain.Stock;
 import org.pda.announcement.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

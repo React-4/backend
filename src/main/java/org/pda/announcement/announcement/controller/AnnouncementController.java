@@ -9,13 +9,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.pda.announcement.announcement.dto.AllAnnouncementsResponse;
+import org.pda.announcement.announcement.dto.FavAnnouncementResponse;
 import org.pda.announcement.announcement.service.AnnouncementService;
 import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -107,4 +112,24 @@ public class AnnouncementController {
             @Parameter(description = "그룹화 기준 (day, week, month)", required = true) @PathVariable("groupBy") String groupBy) {
         return ResponseEntity.ok(new ApiCustomResponse("공시 목록 조회 후 공시의 date를 " + groupBy + "로 GroupBy하여 반환 성공", announcementService.getAnnouncementsGroupedBy(stockId, groupBy)));
     }
+
+    @PostMapping("/list")
+    @Operation(summary = "공시 ID 리스트로 공시 정보 조회", description = "공시 ID 리스트를 이용하여 공시 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공시 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ApiCustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 데이터",
+                    content = @Content(schema = @Schema(implementation = ErrorCustomResponse.class)))
+    })
+    public ResponseEntity<?> getAnnouncementsByIds(
+            @Parameter(description = "공시 ID 리스트", required = true) @RequestBody List<Long> announcementIds) {
+        try {
+            List<FavAnnouncementResponse> announcements = announcementService.getAnnouncementsByIds(announcementIds);
+            return ResponseEntity.ok(new ApiCustomResponse("공시 정보 조회 성공", announcements));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorCustomResponse("유효하지 않은 요청 데이터"));
+        }
+    }
+
 }

@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -150,6 +152,60 @@ public class StockPriceServiceImpl implements StockPriceService {
                             );
                         }
                 ));
+    }
+
+
+    @Override
+    public Map<Integer, StockRankResponse> getFavStockPriceFromRedis(List<Long> stockIds) {
+        try {
+            // Stock ID로 Stock 정보를 가져오기
+            List<StockSearchResponse> stockSearchResponses = stockService.getStocksByIds(stockIds);
+
+            // 모든 티커 수집
+            List<String> tickers = stockSearchResponses.stream()
+                    .map(StockSearchResponse::getTicker)
+                    .collect(Collectors.toList());
+
+            // Redis에서 티커별 현재가 데이터 가져오기
+            Map<String, Map<Object, Object>> redisPriceData = redisService.getStockCurrentPricesByTickers(tickers);
+
+            // StockRankResponse로 매핑할 Map 생성
+            Map<Integer, StockRankResponse> stockRankMap = new HashMap<>();
+
+            // stocks 데이터를 순회하며 StockRankResponse 생성 및 매핑
+            for (StockSearchResponse stock : stockSearchResponses) {
+                StockRankResponse stockRankResponse = new StockRankResponse();
+                stockRankResponse.setStockId(stock.getStockId());
+                stockRankResponse.setStockName(stock.getCompanyName());
+                stockRankResponse.setStockCode(stock.getTicker());
+
+                // Redis 데이터에서 가격 정보 추가
+                Map<Object, Object> priceData = redisPriceData.get(stock.getTicker());
+                System.out.println(priceData);
+                if (priceData != null) {
+                    stockRankResponse.setCurrentPrice(priceData.get("currentPrice") != null
+                            ? String.valueOf(priceData.get("currentPrice"))
+                            : "0");
+                    stockRankResponse.setChangeRate(priceData.get("changeRate") != null
+                            ? String.valueOf(priceData.get("changeRate"))
+                            : "0");
+                    stockRankResponse.setVolume(priceData.get("accTradeVolume") != null
+                            ? String.valueOf(priceData.get("accTradeVolume"))
+                            : "0");
+                }
+
+                // ID를 키로 추가
+                stockRankMap.put(stockRankResponse.getStockId().intValue(), stockRankResponse);
+            }
+
+            // 최종 Map 반환
+            return stockRankMap;
+
+        } catch (Exception e) {
+            // 예외 처리 (로그를 출력하고 빈 Map 반환)
+            e.printStackTrace();
+            return Collections.emptyMap();
+        }
     }
 
 }

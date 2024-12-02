@@ -74,4 +74,7 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
             "ORDER BY week DESC, a.announcement_date DESC",
             nativeQuery = true)
     List<Object[]> findAnnouncementsByWeek(@Param("stockId") Long stockId);
+
+    List<Announcement> findAllById(Iterable<Long> ids);
+
 }
