@@ -17,11 +17,5 @@ public interface FavoriteStockService {
     List<FavoriteStockResponse> getFavoriteStockList(String email);
 
     boolean isFavoriteStock(Long stockId, String email);
-<<<<<<< Updated upstream
     List<Long> getFavoriteStockIds(String userEmail);
-
-=======
-
-//    List<FavoriteStockPriceResponse> getStocksInfoByIds(List<Long> stockIds);
->>>>>>> Stashed changes
-    }
+}
