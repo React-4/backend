@@ -29,7 +29,7 @@ public class FeedbackController {
             @ApiResponse(responseCode = "200", description = "공시 투표 조회 성공",
                     content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
     })
-    public ResponseEntity<?> getFeedback(@Parameter(description = "공시 id") @PathVariable Long announcement_id) {
+    public ResponseEntity<?> getFeedback(@PathVariable Long announcement_id) {
         try {
             var feedbackData = feedbackService.getFeedback(announcement_id);
             return ResponseEntity.status(HttpStatus.OK).body(feedbackData);
@@ -46,7 +46,7 @@ public class FeedbackController {
             @ApiResponse(responseCode = "200", description = "공시 투표 성공",
                     content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
     })
-    public ResponseEntity<?> addFeedback(@Parameter(description = "공시 id") @PathVariable Long announcement_id,
+    public ResponseEntity<?> addFeedback(@PathVariable Long announcement_id,
                                          @RequestHeader("Authorization") String token,
                                          @RequestBody FeedbackType feedbackRequest) {
         try {
@@ -68,7 +68,7 @@ public class FeedbackController {
             @ApiResponse(responseCode = "200", description = "공시 투표 삭제 성공",
                     content = @Content(schema = @Schema(implementation = ApiCustomResponse.class)))
     })
-    public ResponseEntity<?> deleteFeedback(@Parameter(description = "공시 id") @PathVariable Long announcement_id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> deleteFeedback(@PathVariable Long announcement_id, @RequestHeader("Authorization") String token) {
         try {
             feedbackService.deleteFeedback(announcement_id, token);
             return ResponseEntity.status(HttpStatus.OK).body(new ApiCustomResponse("투표 삭제 성공"));
