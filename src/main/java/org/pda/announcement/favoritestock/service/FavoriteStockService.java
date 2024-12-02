@@ -16,6 +16,6 @@ public interface FavoriteStockService {
     List<FavoriteStockResponse> getFavoriteStockList(String email);
 
     boolean isFavoriteStock(Long stockId, String email);
-
+    List<Long> getFavoriteStockIds(String userEmail);
 
     }
