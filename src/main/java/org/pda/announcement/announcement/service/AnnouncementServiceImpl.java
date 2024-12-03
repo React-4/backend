@@ -181,6 +181,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
                     announcement.getAnnouncementId(),
                     announcement.getTitle(),
                     announcement.getStock().getCompanyName(),
+                    announcement.getStock().getTicker(),
                     announcement.getAnnouncementDate(),
                     announcement.getSubmitter(),
                     positiveVoteCount + negativeVoteCount,

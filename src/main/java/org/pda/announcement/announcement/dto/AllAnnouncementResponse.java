@@ -11,6 +11,7 @@ public class AllAnnouncementResponse {
     private Long announcementId;
     private String title;
     private String stockName;
+    private String ticker;
     private LocalDate announcementDate;
     private String submitter;
     private int totalVoteCount;
