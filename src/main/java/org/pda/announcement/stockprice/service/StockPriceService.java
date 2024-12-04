@@ -13,6 +13,9 @@ public interface StockPriceService {
     StockCurrentPriceResponse getStockCurrentPrice(String ticker);
 
     Map<String, StockCurrentPriceResponse> getStockCurrentPrices(List<String> tickers);
+
+    Map<String, StockCurrentPriceResponse> getAllStockCurrentPrices();
+
     Map<Integer, StockRankResponse> getFavStockPriceFromRedis(List<Long> stockIds);
 
 }
