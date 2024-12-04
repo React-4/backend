@@ -154,32 +154,6 @@ public class StockPriceServiceImpl implements StockPriceService {
                 ));
     }
 
-    @Override
-    public Map<String, StockCurrentPriceResponse> getAllStockCurrentPrices() {
-        // Redis에서 여러 티커의 데이터를 한 번에 가져옴
-        Map<String, Map<Object, Object>> redisData = redisService.getAllStockCurrentPrices();
-
-        // 데이터를 DTO로 변환
-        return redisData.entrySet().stream()
-                .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty()) // 유효한 데이터만 필터링
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, // 키는 티커
-                        entry -> {
-                            Map<Object, Object> stockData = entry.getValue();
-                            return new StockCurrentPriceResponse(
-                                    (String) stockData.get("ticker"),
-                                    (String) stockData.get("name"),
-                                    Double.valueOf((String) stockData.get("currentPrice")),
-                                    Double.valueOf((String) stockData.get("changeRate")),
-                                    Double.valueOf((String) stockData.get("changeAmount")),
-                                    Double.valueOf((String) stockData.get("accTradeVolume")),
-                                    Long.valueOf((String) stockData.get("marketCap")),
-                                    Double.valueOf((String) stockData.get("foreignRatio"))
-                            );
-                        }
-                ));
-    }
-
 
     @Override
     public Map<Integer, StockRankResponse> getFavStockPriceFromRedis(List<Long> stockIds) {
