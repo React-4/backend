@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +56,20 @@ public class RedisService {
                 ));
     }
 
+    public Map<String, Map<Object, Object>> getAllStockCurrentPrices() {
+        HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
+        Set<String> keys = redisTemplate.keys("stock:*");
+
+        if (keys != null) {
+            return keys.stream()
+                    .collect(Collectors.toMap(
+                            key -> key.substring(6), // Remove "stock:" prefix to get the ticker
+                            hashOperations::entries
+                    ));
+        } else {
+            return Map.of(); // Return an empty map if no keys are found
+        }
+    }
 
 }
 

@@ -12,6 +12,7 @@ import org.pda.announcement.stockprice.dto.StockRankResponse;
 import org.pda.announcement.stockprice.service.StockPriceService;
 import org.pda.announcement.util.api.ApiCustomResponse;
 import org.pda.announcement.util.api.ErrorCustomResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class StockPriceController {
 
     private final StockPriceService stockPriceService;
 
+    @Cacheable(value = "stockPrice", key = "#stock_id + #type + #length")
     @Operation(summary = "주식 가격 조회", description = "주식의 가격 정보를 조회합니다. 'day', 'week', 'month' 타입을 지원합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "주식 가격 조회 성공"),
@@ -91,6 +93,25 @@ public class StockPriceController {
     @GetMapping("/current/{ticker}")
     public ResponseEntity<?> getStockCurrentPrice(@Parameter(description = "현재가 조회") @PathVariable("ticker") String ticker) {
         StockCurrentPriceResponse cp = stockPriceService.getStockCurrentPrice(ticker);
+
+        if (cp == null) {
+            return ResponseEntity.status(404)
+                    .body(new ErrorCustomResponse("주식 정보가 없습니다"));
+        }
+
+        return ResponseEntity.status(200)
+                .body(new ApiCustomResponse("주식 정보 조회 성공", cp));
+    }
+
+
+    @Operation(summary = "현재 전종목 주식 가격 조회", description = "전종목 주식의 현재 가격을 조회합니다. 티커를 기반으로 현재 가격 정보를 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "주식 정보 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "주식 정보가 없음")
+    })
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllStockCurrentPrice() {
+        Map<String, StockCurrentPriceResponse> cp = stockPriceService.getAllStockCurrentPrices();
 
         if (cp == null) {
             return ResponseEntity.status(404)
